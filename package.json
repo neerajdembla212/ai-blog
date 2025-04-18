@@ -14,6 +14,7 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jsdom": "^26.1.0",
+    "redis": "^4.7.0",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.14.1",
+    "@types/redis": "^4.0.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
