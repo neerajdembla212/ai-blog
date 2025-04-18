@@ -1,22 +1,25 @@
 import { createClient } from "redis";
 
-const redis = createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379",
-});
+const redisEnabled = process.env.DISABLE_REDIS !== "true";
 
-let redisAvailable = true;
+const redis = redisEnabled
+  ? createClient({
+      url: process.env.REDIS_URL || "redis://localhost:6379",
+    })
+  : null;
 
-redis.connect().catch((err) => {
-  redisAvailable = false;
-  console.error("Redis connection error: ", err);
-});
+if (redisEnabled && redis) {
+  redis.connect().catch((err) => {
+    console.error("Redis connection error: ", err);
+  });
+}
 
 const DEFAULT_TTL = 300; // in seconds
 
 export async function getCache<T>(key: string): Promise<T | null> {
-  if (!redisAvailable) return null;
+  if (!redisEnabled) return null;
   try {
-    const data = await redis.get(key);
+    const data = await redis?.get(key);
     return data ? JSON.parse(data) : null;
   } catch (err) {
     console.error(`Redis GET failed for key ${key} `, err);
@@ -29,9 +32,9 @@ export async function setCache<T>(
   value: T,
   ttl: number = DEFAULT_TTL
 ) {
-  if (!redisAvailable) return null;
+  if (!redisEnabled) return null;
   try {
-    await redis.set(key, JSON.stringify(value), {
+    await redis?.set(key, JSON.stringify(value), {
       EX: ttl,
     });
   } catch (err) {

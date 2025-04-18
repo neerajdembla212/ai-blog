@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, { Request, Response, ErrorRequestHandler, NextFunction } from "express";
 import createError from "http-errors";
 import path from "path";
