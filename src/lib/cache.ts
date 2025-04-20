@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import { DEFAULT_TTL } from "../config";
 
 const redisEnabled = process.env.DISABLE_REDIS !== "true";
 
@@ -13,8 +14,6 @@ if (redisEnabled && redis) {
     console.error("Redis connection error: ", err);
   });
 }
-
-const DEFAULT_TTL = 300; // in seconds
 
 export async function getCache<T>(key: string): Promise<T | null> {
   if (!redisEnabled) return null;

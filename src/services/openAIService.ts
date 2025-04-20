@@ -10,13 +10,13 @@ export const summarizeText = async (
   text: string
 ): Promise<string> => {
   const textSummary = await withCache(
-    `text:${id}:summary`,
+    `summary:${id}`,
     300,
     async (): Promise<string> => {
       const summary = await openai.responses.create({
         model: "gpt-3.5-turbo",
-        input: `Summarize in <150 words: ${text}`,
-        max_output_tokens: 100,
+        input: `Summarize in <= 150 words: ${text}`,
+        max_output_tokens: 150,
       });
       return summary.output_text;
     }

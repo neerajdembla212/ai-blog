@@ -22,4 +22,5 @@ services:
     environment:
       - PORT=3000
       - REDIS_URL=redis://redis:6379
+      - DISABLE_REDIS=false
     command: sh -c "npm install && npm run dev"
