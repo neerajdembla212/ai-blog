@@ -1,10 +1,9 @@
 import { Router, Request, Response } from "express";
-import { withCache } from "../lib/withCache";
 import { getBlogs, getBlogById } from "../services/blogService";
 import { summarizeText } from "../services/openAIService";
 import { BlogDto } from "../models/blog.dto";
-import { mapBlogEntityToBlogDto } from "../mappers/blog.mapper";
-import { DEFAULT_TTL, MEDIUM_USERNAME } from "../config";
+import { fineTuneLogger, TRAINING_LOG_PATH } from "../lib/fineTuneLogger";
+import { uploadTrainingData } from "../lib/s3";
 
 const router = Router();
 
@@ -54,6 +53,13 @@ router.get("/:id/summary", async (req: Request, res: Response) => {
         ...blog,
         summary,
       };
+      void (async () => {
+        if (process.env.LOG_SUMMARY_TRAINING === "true") {
+          fineTuneLogger(blog.content, summary);
+          await uploadTrainingData(TRAINING_LOG_PATH);
+        }
+      })();
+      
       res.json({
         blog: response,
       });

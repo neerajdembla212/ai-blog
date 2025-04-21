@@ -1,7 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express, { Request, Response, ErrorRequestHandler, NextFunction } from "express";
+import express, {
+  Request,
+  Response,
+  ErrorRequestHandler,
+  NextFunction,
+} from "express";
 import createError from "http-errors";
 import path from "path";
 import cookieParser from "cookie-parser";
@@ -13,8 +18,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(compression());
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  compression({
+    brotli: { enabled: true, zlib: {} },
+  })
+);
 
 app.use("/blogs", blogRoutes);
 
@@ -26,14 +35,14 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 // API-style Error Handler
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const status = (err.status as number) || 500;
-  
+
   res.status(status).json({
     error: {
       message: err.message,
-      ...(req.app.get('env') === "development" && {stack: err.stack})
-    }
+      ...(req.app.get("env") === "development" && { stack: err.stack }),
+    },
   });
-}
+};
 app.use(errorHandler);
 
 export default app;
