@@ -1,3 +1,6 @@
+/**
+ * This file communicates with AWS s3 service to upload the training data we create on each request on s3 bucket (configured in env variable)
+ */
 import {
   S3Client,
   PutObjectCommand,

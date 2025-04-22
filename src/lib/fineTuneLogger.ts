@@ -1,3 +1,6 @@
+/**
+ * This file creates training data for fine tuning AI and stores in this backend server (for now)
+ */
 import fs from "fs";
 import path from "path";
 

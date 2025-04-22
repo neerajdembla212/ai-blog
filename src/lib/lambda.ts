@@ -28,24 +28,32 @@ export const handler = async (event: any) => {
       const response = await s3.send(getObjectCommand);
       if (response.Body) {
         existingData = await streamToString(response.Body as Readable);
+        console.log("s3 read successful!");
       }
     } catch (error: any) {
       if (error.name === "NoSuchKey") {
         existingData = "";
         console.log(`No existing data found, creating ${LOG_KEY}`);
       } else {
-        console.log("Unexpected error occured while reafing file from s3");
+        console.log("Unexpected error occured while reading file from s3");
         throw error;
       }
     }
 
     const updatedData = existingData + newLine;
-    await s3.send(new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: LOG_KEY,
-      Body: updatedData,
-      ContentType: "application/jsonl",
-    }));
+    try {
+
+      await s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: LOG_KEY,
+        Body: updatedData,
+        ContentType: "application/jsonl",
+      }));
+      console.log("s3 write successful! on resource: ", LOG_KEY);
+    } catch(err) {
+      console.log("Unexpected error occured while writing file to s3");
+      throw err;
+    }
   }
 
   return {

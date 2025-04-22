@@ -2,8 +2,7 @@ import { Router, Request, Response } from "express";
 import { getBlogs, getBlogById } from "../services/blogService";
 import { summarizeText } from "../services/openAIService";
 import { BlogDto } from "../models/blog.dto";
-import { fineTuneLogger, TRAINING_LOG_PATH } from "../lib/fineTuneLogger";
-import { uploadTrainingData } from "../lib/s3";
+import { enqueueTrainingLogs } from "../lib/sqs";
 
 const router = Router();
 
@@ -56,8 +55,7 @@ router.get("/:id/summary", async (req: Request, res: Response) => {
       void (async () => {
         if (process.env.LOG_SUMMARY_TRAINING === "true") {
           try {
-            fineTuneLogger(blog.content, summary);
-            await uploadTrainingData(TRAINING_LOG_PATH);
+            await enqueueTrainingLogs(blog.content, summary);
           } catch (err) {
             console.log("Async upload training data failed: ", err);
           }
