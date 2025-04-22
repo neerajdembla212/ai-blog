@@ -55,11 +55,15 @@ router.get("/:id/summary", async (req: Request, res: Response) => {
       };
       void (async () => {
         if (process.env.LOG_SUMMARY_TRAINING === "true") {
-          fineTuneLogger(blog.content, summary);
-          await uploadTrainingData(TRAINING_LOG_PATH);
+          try {
+            fineTuneLogger(blog.content, summary);
+            await uploadTrainingData(TRAINING_LOG_PATH);
+          } catch (err) {
+            console.log("Async upload training data failed: ", err);
+          }
         }
       })();
-      
+
       res.json({
         blog: response,
       });
